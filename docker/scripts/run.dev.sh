@@ -6,6 +6,7 @@ WORKDIR=$SCRIPTDIR/../..
 docker run --rm -it \
 	-v $PWD/$WORKDIR/Output:/workdir/output \
 	-v $PWD/$WORKDIR/api:/workdir/api \
+	-v $PWD/$WORKDIR/flaskapi:/workdir/flaskapi \
 	-v $PWD/$SCRIPTDIR/init.sh:/scripts/init.sh \
 	-e PORT=80 \
 	-p 3000:80 \
