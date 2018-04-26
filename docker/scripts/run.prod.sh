@@ -16,13 +16,13 @@ if [ "$1" == 'gpu' ]; then
 		-e PORT=80 \
 		-e NVIDIA_VISIBLE_DEVICES=all \
 		-p 3000:80 \
-		--name vfastrcnn \
+		--name vcntkprod \
 		user1m/vott-reviewer-cntk:$1
 else
 	docker run --rm -itd \
 		-v $PWD/$WORKDIR/Output:/workdir/model \
 		-e PORT=80 \
 		-p 3000:80 \
-		--name vfastrcnn \
+		--name vcntkprod \
 		user1m/vott-reviewer-cntk:$1
 fi

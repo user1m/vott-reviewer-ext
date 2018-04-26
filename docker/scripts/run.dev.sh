@@ -20,7 +20,7 @@ if [ "$1" == 'gpu' ]; then
 		-e ENV=development \
 		-e NVIDIA_VISIBLE_DEVICES=all \
 		-p 3000:80 \
-		--name vfastrcnn \
+		--name vcntkdev \
 		user1m/vott-reviewer-cntk:$1 \
 		bash -c "/scripts/init.sh"
 else
@@ -32,7 +32,7 @@ else
 		-e PORT=80 \
 		-e ENV=development \
 		-p 3000:80 \
-		--name vfastrcnn \
+		--name vcntkdev \
 		user1m/vott-reviewer-cntk:$1 \
 		bash -c "/scripts/init.sh"
 
