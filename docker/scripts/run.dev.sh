@@ -17,6 +17,8 @@ if [ "$1" == 'gpu' ]; then
 		-v $PWD/$WORKDIR/pyfiles:/workdir/pyfiles \
 		-v $PWD/$WORKDIR/scripts/:/scripts/ \
 		-e PORT=80 \
+		-e ENV=development \
+		-e NVIDIA_VISIBLE_DEVICES=all \
 		-p 3000:80 \
 		--name vfastrcnn \
 		user1m/vott-reviewer-cntk:$1 \
@@ -28,6 +30,7 @@ else
 		-v $PWD/$WORKDIR/pyfiles:/workdir/pyfiles \
 		-v $PWD/$WORKDIR/scripts/:/scripts/ \
 		-e PORT=80 \
+		-e ENV=development \
 		-p 3000:80 \
 		--name vfastrcnn \
 		user1m/vott-reviewer-cntk:$1 \

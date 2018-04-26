@@ -26,4 +26,3 @@ else
 		--name vfastrcnn \
 		user1m/vott-reviewer-cntk:$1
 fi
-# bash

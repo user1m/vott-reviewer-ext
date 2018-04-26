@@ -27,5 +27,4 @@ RUN ln -s /workdir/flaskapi/*.py /cntk/Examples/Image/Detection/
 
 WORKDIR /workdir/flaskapi/
 
-RUN npm i -g forever
-CMD bash -c 'source /cntk/activate-cntk && forever start -c python /cntk/Examples/Image/Detection/run_app.py'
+CMD bash -c "source /cntk/activate-cntk && python /cntk/Examples/Image/Detection/run_app.py"
