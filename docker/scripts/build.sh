@@ -9,4 +9,4 @@ if [ "$1" != "cpu" ] && [ "$1" != "gpu" ]; then
 	exit 1
 fi
 
-docker build -t user1m/vott-reviewer-cntk:$1 -f $SCRIPTDIR/../Dockerfile-py3-$1 $WORKDIR/docker/context
+docker build -t user1m/vott-reviewer-cntk:$1 -f $SCRIPTDIR/../Dockerfile-py3-$1 $WORKDIR/docker
