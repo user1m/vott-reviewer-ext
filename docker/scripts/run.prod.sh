@@ -9,10 +9,21 @@ if [ "$1" != "cpu" ] && [ "$1" != "gpu" ]; then
 	exit 1
 fi
 
-docker run --rm -itd \
-	-v $PWD/$WORKDIR/Output:/workdir/model \
-	-e PORT=80 \
-	-p 3000:80 \
-	--name vfastrcnn \
-	user1m/vott-reviewer-cntk:$1
+if [ "$1" == 'gpu' ]; then
+	docker run --rm -itd \
+		--runtime=nvidia \
+		-v $PWD/$WORKDIR/Output:/workdir/model \
+		-e PORT=80 \
+		-e NVIDIA_VISIBLE_DEVICES=all \
+		-p 3000:80 \
+		--name vfastrcnn \
+		user1m/vott-reviewer-cntk:$1
+else
+	docker run --rm -itd \
+		-v $PWD/$WORKDIR/Output:/workdir/model \
+		-e PORT=80 \
+		-p 3000:80 \
+		--name vfastrcnn \
+		user1m/vott-reviewer-cntk:$1
+fi
 # bash
