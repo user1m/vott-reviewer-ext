@@ -35,5 +35,6 @@ else
 		--name vfastrcnn \
 		user1m/vott-reviewer-cntk:$1 \
 		bash -c "/scripts/init.sh"
+
+	# -v $PWD/$WORKDIR/api:/workdir/api \
 fi
-# -v $PWD/$WORKDIR/api:/workdir/api \
