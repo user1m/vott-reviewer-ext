@@ -11,7 +11,7 @@ docker run --rm -it \
 	-e PORT=80 \
 	-p 3000:80 \
 	--name vfastrcnn \
-	vott-fastrcnn \
+	user1m/vott-reviewer-cntk:cpu \
 	bash -c "/scripts/init.sh"
 
-	# -v $PWD/$WORKDIR/api:/workdir/api \
+# -v $PWD/$WORKDIR/api:/workdir/api \

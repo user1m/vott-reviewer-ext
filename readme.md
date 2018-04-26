@@ -20,14 +20,15 @@ This is a tool to run a model reviewer in a docker container to decouple model r
 
 ```
 > docker run --rm -itd \
-	-v /path/to/cntk/model/:/workdir/model \
+	-v /path/to/cntk/model/:/workdir/model/ \
 	-e PORT=80 \
 	-p 3000:80 \
 	--name vott-reviewer \
 	user1m/vott-reviewer-cntk:cpu
 ```
 
-*  This will expose an expoint on `127.0.0.1:3000/cntk`. Plug this endpoint into VOTT
+* **NOTE:** Your cntk model path must be mapped to the container's `/workdir/model/` path
+*  This will expose an expoint on `127.0.0.1:3000/cntk`. Plug this endpoint into VOTT and review.
 
 
 ## Test

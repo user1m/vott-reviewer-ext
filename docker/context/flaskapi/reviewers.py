@@ -22,43 +22,50 @@ api = Api(app)
 cors = CORS(app, resources={r"/foo": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-class ModelLoader:
-    def __init__(
-            self,
-            input,
-            model,
-            image_id,
-            output="/workdir/temp/outputs",
-    ):
-        self.input = input
-        self.output = output
-        self.model = model
-        self.image_id = image_id
 
-    def run(self):
-        start = time.time()
+class ModelLoader:
+    def __init__(self):
+        self.input_blob = None
+        self.image_id = None
+        self.model = None
+        self.model_classes = None
+
+    def configure(self, model_path=""):
+        if self.model is None:
+            self.model_path = model_path
+            self.model = load_model(self.model_path)
+            labels_count = self.model.cls_pred.shape[1]
+            self.model_classes = self.get_classes_description(
+                self.model_path, labels_count)
+
+    def run(self, blob, id):
+        self.input_blob = blob
+        self.image_id = id
+        # start = time.time()
         cntk_path = "/cntk/"
         #/cntk/Examples/Image/Detection/FasterRCNN/
         cntk_scripts_path = path.join(cntk_path, r"Examples/Image/Detection/")
         sys.path.append(cntk_scripts_path)
 
         available_detectors = ['FasterRCNN']
-        output_path = self.output
-        model_path = self.model
-        model = load_model(model_path)
-        FRCNN_DIM_W = model.arguments[0].shape[1]
-        FRCNN_DIM_H = model.arguments[0].shape[2]
-        labels_count = model.cls_pred.shape[1]
-        model_classes = self.get_classes_description(model_path, labels_count)
-        cfg = self.get_configuration(model_classes)
-        evaluator = FasterRCNN_Evaluator(model, cfg)
-        vott_classes = {model_classes[i]: i for i in range(len(model_classes))}
+        # output_path = self.output
+        # model_path = self.model_path
+        FRCNN_DIM_W = self.model.arguments[0].shape[1]
+        FRCNN_DIM_H = self.model.arguments[0].shape[2]
+
+        cfg = self.get_configuration(self.model_classes)
+        evaluator = FasterRCNN_Evaluator(self.model, cfg)
+        vott_classes = {
+            self.model_classes[i]: i
+            for i in range(len(self.model_classes))
+        }
         json_output_obj = {"classes": vott_classes, "frames": {}}
 
-        if(len(self.input) > 0):
-            img = Image.open(io.BytesIO(self.input))
-            file_path = "/workdir/temp/inputs/"+self.image_id+".jpg"
-            img.save(file_path, "JPEG", quality=80, optimize=True, progressive=True)
+        if (len(self.input_blob) > 0):
+            img = Image.open(io.BytesIO(self.input_blob))
+            file_path = "/workdir/temp/inputs/" + self.image_id + ".jpg"
+            img.save(
+                file_path, "JPEG", quality=80, optimize=True, progressive=True)
             width, height = img.size
             scale = max(width, height) / max(FRCNN_DIM_W, FRCNN_DIM_H)
 
@@ -89,7 +96,7 @@ class ModelLoader:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
         except Exception as e:
-            print(e)
+            print(e, file=sys.stdout)
 
         return json_dump
 
@@ -115,7 +122,6 @@ class ModelLoader:
     def get_configuration(self, classes):
         # load configs for detector, base network and data set
         from FasterRCNN.FasterRCNN_config import cfg as detector_cfg
-
         # for VGG16 base model use:         from utils.configs.VGG16_config import cfg as network_cfg
         # for AlexNet base model use:       from utils.configs.AlexNet_config import cfg as network_cfg
         from utils.configs.AlexNet_config import cfg as network_cfg
@@ -160,7 +166,6 @@ class ModelLoader:
             })
         return result
 
-
     def predict(self, img_path, evaluator, cfg, debug=False):
         # detect objects in single image
         regressed_rois, cls_probs = evaluator.process_image(img_path)
@@ -189,17 +194,19 @@ class ModelLoader:
         return result
 
 
+loader = ModelLoader()
+
+
 class CNTK(Resource):
-    @cross_origin(origin='*',headers=['Content-Type','Authorization'])
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def get(self):
         resp = "<h1> Welcome To VOTT Reviewer Service: <br/> CNTK Endpint</h1>"
         return make_response(resp, 200, {'Content-Type': HTML_MIME_TYPE})
 
     @app.route('/cntk', methods=['POST'])
-    @cross_origin(origin='*',headers=['Content-Type','Authorization'])
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def post():
-        id = str(uuid.uuid4());
-        fname = request.values["filename"]
+        id = str(uuid.uuid4())
         blob = request.files['image'].read()
         # size = len(blob)
         # print(fname, file=sys.stdout)
@@ -208,19 +215,16 @@ class CNTK(Resource):
         for file in os.listdir("/workdir/model/"):
             if file.endswith(".model"):
                 model_path = os.path.join("/workdir/model/", file)
-        
-        # print(model_path, file=sys.stdout)
 
-        data = ModelLoader(
-            blob,
-            model_path,
-            fname).run()
+        # print(model_path, file=sys.stdout)
+        loader.configure(model_path)
+        data = loader.run(blob, id)
         # print(data, file=sys.stdout)
         return make_response(data, 200, {'Content-Type': JSON_MIME_TYPE})
 
 
 class Home(Resource):
-    @cross_origin(origin='*',headers=['Content-Type','Authorization'])
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def get(self):
         resp = '<html><head></head><body><h1>Welcome To VOTT Reviewer Service</h1> <br/> <p>Apis available:</p><ul><li>get: /</li><li>post: /cntk</li></ul></body></html>'
         return make_response(resp, 200, {'Content-Type': HTML_MIME_TYPE})

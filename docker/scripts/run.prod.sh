@@ -8,6 +8,5 @@ docker run --rm -itd \
 	-e PORT=80 \
 	-p 3000:80 \
 	--name vfastrcnn \
-	user1m/vott-reviewer:cpu \
-	# bash
-
+	user1m/vott-reviewer-cntk:cpu
+# bash

@@ -1,6 +1,7 @@
 import os
 
 from reviewers import app
+from reviewers import loader
 # from home import app
 
 if __name__ == '__main__':

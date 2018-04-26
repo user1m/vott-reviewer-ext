@@ -3,7 +3,7 @@ FROM microsoft/cntk:2.2-gpu-python3.5-cuda8.0-cudnn6.0
 LABEL maintainer "MICROSOFT CORPORATION"
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends git nvidia-cuda-toolkit && \
+    apt-get install -y --no-install-recommends curl git nvidia-cuda-toolkit && \
     apt-get -y autoremove && \
     rm -rf /var/lib/apt/lists/*
 
@@ -20,14 +20,11 @@ RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/nms/gpu_nms.cpyth
 RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/nms/cpu_nms.cpython-35m-x86_64-linux-gnu.so /cntk/Examples/Image/Detection/utils/cython_modules/
 
 COPY flaskapi /workdir/flaskapi/
-# COPY pyfiles /workdir/pyfiles/
 
-# RUN ln -s /workdir/pyfiles/*.py /cntk/Examples/Image/Detection/
-RUN mkdir -p /workdir/temp/inputs 
+RUN mkdir -p /workdir/temp/inputs
 RUN bash -c 'source /cntk/activate-cntk && pip install -r /workdir/flaskapi/requirements.txt'
 RUN ln -s /workdir/flaskapi/*.py /cntk/Examples/Image/Detection/
 
-# WORKDIR /cntk/Examples/Image/Detection
 WORKDIR /workdir/flaskapi/
 
 CMD bash -c 'source /cntk/activate-cntk && python /cntk/Examples/Image/Detection/run_app.py'
