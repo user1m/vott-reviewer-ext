@@ -1,3 +1,3 @@
 #!/bin/bash
 
-source /cntk/activate-cntk && python /workdir/flaskapi/run_app.py
+source /cntk/activate-cntk && python /cntk/Examples/Image/Detection/run_app.py
