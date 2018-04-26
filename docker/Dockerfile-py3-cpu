@@ -21,7 +21,7 @@ RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/utils/cython_bbox
 RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/nms/gpu_nms.cpython-35m-x86_64-linux-gnu.so /cntk/Examples/Image/Detection/utils/cython_modules/
 RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/nms/cpu_nms.cpython-35m-x86_64-linux-gnu.so /cntk/Examples/Image/Detection/utils/cython_modules/
 
-COPY flaskapi /workdir/flaskapi/
+COPY context/flaskapi /workdir/flaskapi/
 
 RUN mkdir -p /workdir/temp/inputs
 RUN bash -c 'source /cntk/activate-cntk && pip install -r /workdir/flaskapi/requirements.txt'
