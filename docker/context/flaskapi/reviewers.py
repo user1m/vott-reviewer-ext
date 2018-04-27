@@ -206,7 +206,8 @@ class CNTK(Resource):
     @app.route('/cntk', methods=['POST'])
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def post():
-        id = str(uuid.uuid4())
+        # id = str(uuid.uuid4())
+        fname = request.values["filename"]
         blob = request.files['image'].read()
         # size = len(blob)
         # print(fname, file=sys.stdout)
@@ -218,7 +219,7 @@ class CNTK(Resource):
 
         # print(model_path, file=sys.stdout)
         loader.configure(model_path)
-        data = loader.run(blob, id)
+        data = loader.run(blob, fname)
         # print(data, file=sys.stdout)
         return make_response(data, 200, {'Content-Type': JSON_MIME_TYPE})
 
