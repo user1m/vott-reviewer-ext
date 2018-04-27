@@ -10,6 +10,16 @@ if [ "$1" != "cpu" ] && [ "$1" != "gpu" ]; then
 fi
 
 if [ "$1" == 'gpu' ]; then
+
+	if [ -f '/usr/bin/nvidia-smi' ]; then
+		mv /usr/bin/nvidia-cuda-mps-control /usr/bin/nvidia-cuda-mps-control1
+		mv /usr/bin/nvidia-cuda-mps-server /usr/bin/nvidia-cuda-mps-server1
+		mv /usr/bin/nvidia-debugdump /usr/bin/nvidia-debugdump1
+		mv /usr/bin/nvidia-persistenced /usr/bin/nvidia-persistenced1
+		mv /usr/bin/nvidia-smi /usr/bin/nvidia-smi1
+		mv /usr/bin/nvidia-xconfig /usr/bin/nvidia-xconfig1
+	fi
+
 	docker run --rm -itd \
 		--runtime=nvidia \
 		-v $PWD/$WORKDIR/Output:/workdir/model \
@@ -18,7 +28,18 @@ if [ "$1" == 'gpu' ]; then
 		-p 3000:80 \
 		--name vcntkprod-gpu \
 		user1m/vott-reviewer-cntk:$1
+
+	if [ -f '/usr/bin/nvidia-smi1' ]; then
+		mv /usr/bin/nvidia-cuda-mps-control1 /usr/bin/nvidia-cuda-mps-control
+		mv /usr/bin/nvidia-cuda-mps-server1 /usr/bin/nvidia-cuda-mps-server
+		mv /usr/bin/nvidia-debugdump1 /usr/bin/nvidia-debugdump
+		mv /usr/bin/nvidia-persistenced1 /usr/bin/nvidia-persistenced
+		mv /usr/bin/nvidia-smi1 /usr/bin/nvidia-smi
+		mv /usr/bin/nvidia-xconfig1 /usr/bin/nvidia-xconfig
+	fi
+
 else
+
 	docker run --rm -itd \
 		-v $PWD/$WORKDIR/Output:/workdir/model \
 		-e PORT=80 \

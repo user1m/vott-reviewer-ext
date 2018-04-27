@@ -7,10 +7,10 @@ RUN apt-get update && \
     apt-get -y autoremove && \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-RUN apt install -y nodejs
+# RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+# RUN apt install -y nodejs
 
-RUN bash -c 'cd /cntk/Examples/Image/DataSets/Grocery && python install_grocery.py && mkdir grocery && mv positive/ grocery/ && mv negative/ grocery/ && mv testImages/ grocery/'
+RUN bash -c 'source /cntk/activate-cntk && cd /cntk/Examples/Image/DataSets/Grocery && python install_grocery.py && mkdir grocery && mv positive/ grocery/ && mv negative/ grocery/ && mv testImages/ grocery/'
 RUN /root/anaconda3/envs/cntk-py35/bin/conda install -y -n cntk-py35 cython boost
 
 RUN bash -c 'source /cntk/activate-cntk && pip install opencv-python easydict pyyaml dlib'

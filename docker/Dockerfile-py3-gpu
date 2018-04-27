@@ -3,17 +3,20 @@ FROM microsoft/cntk:2.2-gpu-python3.5-cuda8.0-cudnn6.0
 LABEL maintainer "MICROSOFT CORPORATION"
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends curl git nvidia-cuda-toolkit && \
+    apt-get install -y --no-install-recommends curl git Cython libopencv-dev nvidia-cuda-toolkit && \
     apt-get -y autoremove && \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-RUN apt install -y nodejs
+# RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+# RUN apt install -y nodejs
 
-RUN bash -c 'cd /cntk/Examples/Image/DataSets/Grocery && python install_grocery.py && mkdir grocery && mv positive/ grocery/ && mv negative/ grocery/ && mv testImages/ grocery/'
+# RUN bash -c 'source /cntk/activate-cntk && cd /cntk/Examples/Image/DataSets/Grocery && python install_grocery.py && mkdir grocery && mv positive/ grocery/ && mv negative/ grocery/ && mv testImages/ grocery/'
 RUN /root/anaconda3/envs/cntk-py35/bin/conda install -y -n cntk-py35 cython boost opencv cmake
 RUN bash -c 'source /cntk/activate-cntk && pip install easydict pyyaml dlib'
-RUN bash -c 'source /cntk/activate-cntk && cd /cntk/Examples/Image/Detection/utils && git clone https://github.com/CatalystCode/py-faster-rcnn.git && cd py-faster-rcnn/lib && python setup.py build_ext --inplace'
+
+RUN bash -c 'source /cntk/activate-cntk && cd /cntk/Examples/Image/Detection/utils && git clone https://github.com/CatalystCode/py-faster-rcnn.git'
+RUN bash -c 'source /cntk/activate-cntk && cd /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib && python setup.py build_ext --inplace'
+
 RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/pycocotools/_mask.cpython-35m-x86_64-linux-gnu.so /cntk/Examples/Image/Detection/utils/cython_modules/
 RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/utils/cython_bbox.cpython-35m-x86_64-linux-gnu.so /cntk/Examples/Image/Detection/utils/cython_modules/
 RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/nms/gpu_nms.cpython-35m-x86_64-linux-gnu.so /cntk/Examples/Image/Detection/utils/cython_modules/
