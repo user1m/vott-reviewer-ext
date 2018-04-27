@@ -10,11 +10,15 @@ RUN apt-get update && \
 # RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
 # RUN apt install -y nodejs
 
-RUN bash -c 'source /cntk/activate-cntk && cd /cntk/Examples/Image/DataSets/Grocery && python install_grocery.py && mkdir grocery && mv positive/ grocery/ && mv negative/ grocery/ && mv testImages/ grocery/'
+# RUN bash -c 'source /cntk/activate-cntk && cd /cntk/Examples/Image/DataSets/Grocery && python install_grocery.py && mkdir grocery && mv positive/ grocery/ && mv negative/ grocery/ && mv testImages/ grocery/'
 RUN /root/anaconda3/envs/cntk-py35/bin/conda install -y -n cntk-py35 cython boost
 
-RUN bash -c 'source /cntk/activate-cntk && pip install opencv-python easydict pyyaml dlib'
-RUN bash -c 'source /cntk/activate-cntk && cd /cntk/Examples/Image/Detection/utils && git clone https://github.com/CatalystCode/py-faster-rcnn.git && cd py-faster-rcnn/lib && python setup.py build_ext --inplace'
+RUN bash -c 'source /cntk/activate-cntk && \
+    pip install opencv-python easydict pyyaml dlib'
+RUN bash -c 'source /cntk/activate-cntk && cd /cntk/Examples/Image/Detection/utils && \
+    git clone https://github.com/CatalystCode/py-faster-rcnn.git && \
+    cd py-faster-rcnn/lib && \
+    python setup.py build_ext --inplace'
 
 RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/pycocotools/_mask.cpython-35m-x86_64-linux-gnu.so /cntk/Examples/Image/Detection/utils/cython_modules/
 RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/utils/cython_bbox.cpython-35m-x86_64-linux-gnu.so /cntk/Examples/Image/Detection/utils/cython_modules/
@@ -24,9 +28,11 @@ RUN cp /cntk/Examples/Image/Detection/utils/py-faster-rcnn/lib/nms/cpu_nms.cpyth
 COPY context/flaskapi /workdir/flaskapi/
 
 RUN mkdir -p /workdir/temp/inputs
-RUN bash -c 'source /cntk/activate-cntk && pip install -r /workdir/flaskapi/requirements.txt'
+RUN bash -c 'source /cntk/activate-cntk && \
+    pip install -r /workdir/flaskapi/requirements.txt'
 RUN ln -s /workdir/flaskapi/*.py /cntk/Examples/Image/Detection/
 
 WORKDIR /workdir/flaskapi/
 
-CMD bash -c "source /cntk/activate-cntk && python /cntk/Examples/Image/Detection/run_app.py"
+CMD bash -c "source /cntk/activate-cntk && \
+    python /cntk/Examples/Image/Detection/run_app.py"

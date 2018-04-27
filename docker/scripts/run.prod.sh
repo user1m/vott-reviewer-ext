@@ -9,8 +9,15 @@ if [ "$1" != "cpu" ] && [ "$1" != "gpu" ]; then
 	exit 1
 fi
 
+if [ -z "$MODEL_PATH" ]; then
+	echo "MODEL_PATH environment varibale not set"
+	echo "first run: export MODEL_PATH=/path/to/cntk/model/"
+	exit 1
+fi
+
 if [ "$1" == 'gpu' ]; then
 
+	# Fix for GPU machine w/ nvidia setup
 	if [ -f '/usr/bin/nvidia-smi' ]; then
 		mv /usr/bin/nvidia-cuda-mps-control /usr/bin/nvidia-cuda-mps-control1
 		mv /usr/bin/nvidia-cuda-mps-server /usr/bin/nvidia-cuda-mps-server1
@@ -22,7 +29,7 @@ if [ "$1" == 'gpu' ]; then
 
 	docker run --rm -itd \
 		--runtime=nvidia \
-		-v $PWD/$WORKDIR/Output:/workdir/model \
+		-v $MODEL_PATH:/workdir/model \
 		-e PORT=80 \
 		-e NVIDIA_VISIBLE_DEVICES=all \
 		-p 3000:80 \
@@ -41,7 +48,7 @@ if [ "$1" == 'gpu' ]; then
 else
 
 	docker run --rm -itd \
-		-v $PWD/$WORKDIR/Output:/workdir/model \
+		-v $MODEL_PATH:/workdir/model \
 		-e PORT=80 \
 		-p 3000:80 \
 		--name vcntkprod-cpu \

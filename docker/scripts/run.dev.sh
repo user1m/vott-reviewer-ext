@@ -9,6 +9,12 @@ if [ "$1" != "cpu" ] && [ "$1" != "gpu" ]; then
 	exit 1
 fi
 
+if [ -z "$MODEL_PATH" ]; then
+	echo "MODEL_PATH environment varibale not set"
+	echo "first run: export MODEL_PATH=/path/to/cntk/model/"
+	exit 1
+fi
+
 if [ "$1" == 'gpu' ]; then
 
 	if [ -f '/usr/bin/nvidia-smi' ]; then
@@ -22,7 +28,7 @@ if [ "$1" == 'gpu' ]; then
 
 	docker run --rm -it \
 		--runtime=nvidia \
-		-v $PWD/$WORKDIR/Output:/workdir/model \
+		-v $MODEL_PATH:/workdir/model \
 		-v $PWD/$WORKDIR/docker/context/flaskapi:/workdir/flaskapi \
 		-v $PWD/$WORKDIR/pyfiles:/workdir/pyfiles \
 		-v $PWD/$WORKDIR/scripts/:/scripts/ \
@@ -44,7 +50,7 @@ if [ "$1" == 'gpu' ]; then
 	fi
 else
 	docker run --rm -it \
-		-v $PWD/$WORKDIR/Output:/workdir/model \
+		-v $MODEL_PATH:/workdir/model \
 		-v $PWD/$WORKDIR/docker/context/flaskapi:/workdir/flaskapi \
 		-v $PWD/$WORKDIR/pyfiles:/workdir/pyfiles \
 		-v $PWD/$WORKDIR/scripts/:/scripts/ \
@@ -54,6 +60,4 @@ else
 		--name vcntkdev-cpu \
 		user1m/vott-reviewer-cntk:$1 \
 		bash -c "/scripts/init.sh"
-
-	# -v $PWD/$WORKDIR/api:/workdir/api \
 fi

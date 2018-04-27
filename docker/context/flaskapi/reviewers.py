@@ -206,8 +206,8 @@ class CNTK(Resource):
     @app.route('/cntk', methods=['POST'])
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     def post():
-        # id = str(uuid.uuid4())
-        fname = request.values["filename"]
+        id = str(uuid.uuid4())
+        fname = request.values.get("filename") or id
         blob = request.files['image'].read()
         # size = len(blob)
         # print(fname, file=sys.stdout)
