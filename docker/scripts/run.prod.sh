@@ -9,7 +9,7 @@ if [ "$1" != "cpu" ] && [ "$1" != "gpu" ]; then
 	exit 1
 fi
 
-if [ -z "$MODEL_PATH" ]; then
+if [[ -v "$MODEL_PATH" ]]; then
 	echo "MODEL_PATH environment varibale not set"
 	echo "first run: export MODEL_PATH=/path/to/cntk/model/"
 	exit 1
